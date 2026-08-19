@@ -196,10 +196,11 @@ if st.button('Predict Churn Risk'):
     with st.expander('See the underlying probability and risk scale'):
         st.metric('Churn Probability', f'{prob * 100:.1f}%')
         st.caption(
-            f"Scale used: below {MEDIUM_RISK_THRESHOLD*100:.0f}% = Low Risk, "
-            f"{MEDIUM_RISK_THRESHOLD*100:.0f}%-{HIGH_RISK_THRESHOLD*100:.0f}% = Moderate Risk, "
-            f"above {HIGH_RISK_THRESHOLD*100:.0f}% = High Risk. "
-            "These cutoffs were chosen from historical data, not a fixed rule."
+            f"Scale used: below {MEDIUM_RISK_THRESHOLD*100:.0f}% = Low Risk (bottom 25% of subscribers), "
+            f"{MEDIUM_RISK_THRESHOLD*100:.0f}%-{HIGH_RISK_THRESHOLD*100:.0f}% = Moderate Risk (middle ~50%), "
+            f"above {HIGH_RISK_THRESHOLD*100:.0f}% = High Risk (top 25% of subscribers). "
+            "These cutoffs were set so risk tiers split real subscribers into meaningful groups, "
+            "rather than flagging most people as one tier."
         )
 
     with st.expander('See computed features used by the model'):
