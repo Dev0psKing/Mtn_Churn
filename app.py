@@ -39,7 +39,9 @@ with st.sidebar:
     tenure_months = st.number_input('Customer Tenure (months)', 0, 200, 12)
     unit_price = st.number_input('Unit Price (NGN)', 0, 500000, 5000, step=500)
     num_purchases = st.number_input('Number of Times Purchased', 0, 200, 5)
-    total_revenue = st.number_input('Total Revenue (NGN)', 0, 5000000, 25000, step=1000)
+    total_revenue = unit_price * num_purchases
+    st.metric('Total Revenue (NGN)', f'{total_revenue:,}')
+    st.caption('Calculated automatically as Unit Price × Number of Times Purchased.')
 
     st.header('Latest Review (optional)')
     review_text = st.text_area(
