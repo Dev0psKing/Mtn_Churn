@@ -93,23 +93,29 @@ if st.button('Predict Churn Risk'):
     })
 
     prob = model.predict_proba(input_data)[0][1]
-    st.metric('Churn Probability', f'{prob*100:.1f}%')
+
+    st.metric(
+        'Churn Probability',
+        f'{prob * 100:.1f}%'
+    )
 
     if prob >= HIGH_RISK_THRESHOLD:
         st.error(
-            'Priority Retention: This subscriber shows elevated churn risk. '
+            '🔴 Priority Retention\n\n'
+            'This subscriber shows elevated churn risk. '
             'Consider proactive retention outreach.'
         )
     elif prob >= MEDIUM_RISK_THRESHOLD:
         st.warning(
-            'Watch List: This subscriber shows moderate churn risk. '
-            'Consider monitoring engagement and proactive outreach.'
+            '🟠 Watch List\n\n'
+            'This subscriber shows moderate churn risk. '
+            'Monitor engagement and consider proactive outreach.'
         )
     else:
         st.success(
-            'Healthy Engagement: Current churn risk is relatively low. '
+            '🟢 Low Risk\n\n'
+            'This subscriber currently shows relatively low churn risk. '
             'Maintain standard engagement.'
         )
-
     with st.expander('See computed features used by the model'):
         st.write(input_data.T.rename(columns={0: 'Value'}))
