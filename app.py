@@ -27,18 +27,18 @@ st.info(
 # Input fields
 with st.sidebar:
     st.header('Subscriber Details')
-    age = st.slider('Age', 18, 90, 30)
+    age = st.slider('Age', 16, 85, 30)
     state = st.selectbox('State', meta['states'])
     device = st.selectbox('Device', meta['devices'])
     gender = st.selectbox('Gender', meta['genders'])
     plan = st.selectbox('Plan', meta['plans'])
     satisfaction = st.slider('Satisfaction (1-5)', 1, 5, 3)
-    usage = st.number_input('Data Usage (GB)', 0.0, 500.0, 10.0)
+    usage = st.number_input('Data Usage (GB)', 0.0, 200.0, 10.0)
 
     st.header('Account History')
-    tenure_months = st.number_input('Customer Tenure (months)', 0, 200, 12)
-    unit_price = st.number_input('Unit Price (NGN)', 0, 500000, 5000, step=500)
-    num_purchases = st.number_input('Number of Times Purchased', 0, 200, 5)
+    tenure_months = st.number_input('Customer Tenure (months)', 0, 60, 12)
+    unit_price = st.number_input('Unit Price (NGN)', 0, 150000, 5000, step=500)
+    num_purchases = st.number_input('Number of Times Purchased', 0, 20, 5)
     total_revenue = unit_price * num_purchases
     st.metric('Total Revenue (NGN)', f'{total_revenue:,}')
     st.caption('Calculated automatically as Unit Price × Number of Times Purchased.')
