@@ -150,6 +150,49 @@ if st.button('Predict Churn Risk'):
     box_fn(meaning)
     st.markdown(action)
 
+    # ---- Explain WHY: compare each field to a typical loyal subscriber ----
+    ref = meta.get('reference_profile')
+    if ref:
+        field_labels = {
+            'Age': 'Age', 'State': 'State', 'MTN Device': 'Device', 'Gender': 'Gender',
+            'Satisfaction Rate': 'Satisfaction rating', 'Customer Tenure in months': 'Tenure (months)',
+            'Subscription Plan': 'Plan', 'Unit Price': 'Plan price', 'Number of Times Purchased': 'Purchase frequency',
+            'Total Revenue': 'Total spend', 'Data Usage': 'Data usage', 'Revenue_per_Purchase': 'Spend per purchase',
+            'Usage_Intensity': 'Usage intensity', 'Tenure_Group': 'Tenure group', 'Is_High_Value': 'High-value status',
+            'Review_Sentiment_Score': 'Review sentiment', 'Review_Sentiment_Class': 'Review sentiment'
+        }
+        impacts = []
+        for col in input_data.columns:
+            if col not in ref:
+                continue
+            swapped = input_data.copy()
+            swapped[col] = ref[col]
+            swapped_prob = model.predict_proba(swapped)[0][1]
+            delta = prob - swapped_prob  # positive = this field is pushing risk UP vs a typical loyal subscriber
+            impacts.append((field_labels.get(col, col), delta))
+
+        # Deduplicate by label (Revenue_per_Purchase/Usage_Intensity are derived, keep the clearer driver fields only)
+        seen = set()
+        deduped = []
+        for label, delta in impacts:
+            if label in seen:
+                continue
+            seen.add(label)
+            deduped.append((label, delta))
+
+        deduped.sort(key=lambda x: abs(x[1]), reverse=True)
+        top = [d for d in deduped if abs(d[1]) >= 0.01][:4]
+
+        if top:
+            st.markdown('**Why this result:** compared to a typical subscriber who stayed with MTN, this subscriber differs mainly in:')
+            for label, delta in top:
+                if delta > 0:
+                    st.write(f"- 🔺 **{label}** is increasing this subscriber's risk")
+                else:
+                    st.write(f"- 🔻 **{label}** is lowering this subscriber's risk")
+        else:
+            st.markdown('**Why this result:** this subscriber closely matches a typical MTN subscriber overall, no single factor stands out strongly.')
+
     with st.expander('See the underlying probability and risk scale'):
         st.metric('Churn Probability', f'{prob * 100:.1f}%')
         st.caption(
