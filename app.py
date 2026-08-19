@@ -94,28 +94,68 @@ if st.button('Predict Churn Risk'):
 
     prob = model.predict_proba(input_data)[0][1]
 
-    st.metric(
-        'Churn Probability',
-        f'{prob * 100:.1f}%'
-    )
-
+    # ---- Determine risk tier, plain-language meaning, and recommended action ----
     if prob >= HIGH_RISK_THRESHOLD:
-        st.error(
-            '🔴 Priority Retention\n\n'
-            'This subscriber shows elevated churn risk. '
-            'Consider proactive retention outreach.'
+        tier = 'HIGH RISK'
+        emoji = '🔴'
+        headline = 'This subscriber is likely to leave soon.'
+        meaning = (
+            "Among past subscribers who looked similar to this one (same plan, usage, "
+            "satisfaction, and history), a large share ended up cancelling their service. "
+            "This is a strong warning sign, not a certainty, but it means this subscriber "
+            "deserves attention now rather than later."
         )
+        action = (
+            "**Recommended action:** Reach out proactively within the next few days. "
+            "Consider a loyalty discount, a plan upgrade offer, or a personal call to "
+            "understand their concerns before they decide to leave."
+        )
+        box_fn = st.error
     elif prob >= MEDIUM_RISK_THRESHOLD:
-        st.warning(
-            '🟠 Watch List\n\n'
-            'This subscriber shows moderate churn risk. '
-            'Monitor engagement and consider proactive outreach.'
+        tier = 'MODERATE RISK'
+        emoji = '🟠'
+        headline = 'This subscriber shows some early warning signs.'
+        meaning = (
+            "This subscriber isn't in immediate danger of leaving, but their profile "
+            "shares some traits with subscribers who eventually churned. Worth keeping "
+            "an eye on rather than ignoring."
         )
+        action = (
+            "**Recommended action:** No urgent action needed, but add them to a watch "
+            "list. A satisfaction check-in or a small engagement nudge (e.g. a data "
+            "bonus) can help before risk increases."
+        )
+        box_fn = st.warning
     else:
-        st.success(
-            '🟢 Low Risk\n\n'
-            'This subscriber currently shows relatively low churn risk. '
-            'Maintain standard engagement.'
+        tier = 'LOW RISK'
+        emoji = '🟢'
+        headline = 'This subscriber is likely to stay.'
+        meaning = (
+            "This subscriber's profile closely matches past subscribers who remained "
+            "loyal to MTN. There's no strong signal of dissatisfaction or disengagement "
+            "right now."
         )
+        action = (
+            "**Recommended action:** No action needed. Continue standard engagement "
+            "and normal service."
+        )
+        box_fn = st.success
+
+    st.markdown('---')
+    st.subheader(f'{emoji} {tier}')
+    st.write(f"**{headline}**")
+
+    box_fn(meaning)
+    st.markdown(action)
+
+    with st.expander('See the underlying probability and risk scale'):
+        st.metric('Churn Probability', f'{prob * 100:.1f}%')
+        st.caption(
+            f"Scale used: below {MEDIUM_RISK_THRESHOLD*100:.0f}% = Low Risk, "
+            f"{MEDIUM_RISK_THRESHOLD*100:.0f}%-{HIGH_RISK_THRESHOLD*100:.0f}% = Moderate Risk, "
+            f"above {HIGH_RISK_THRESHOLD*100:.0f}% = High Risk. "
+            "These cutoffs were chosen from historical data, not a fixed rule."
+        )
+
     with st.expander('See computed features used by the model'):
         st.write(input_data.T.rename(columns={0: 'Value'}))
