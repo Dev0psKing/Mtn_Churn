@@ -18,9 +18,10 @@ HIGH_VALUE_REVENUE = meta['high_value_revenue_threshold']
 
 st.title('MTN Nigeria Churn Predictor')
 st.markdown('Identify at-risk subscribers and take action.')
-st.caption(
-    f"Model: Random Forest | Held-out ROC-AUC: {meta['test_roc_auc']:.2f} | "
-    f"Risk is a probability estimate, not a certainty, treat it as one input into a retention decision."
+st.info(
+    "Every subscriber has a story. This tool turns usage, tenure, satisfaction, "
+    "spending, and customer feedback into a churn-risk signal — helping retention "
+    "teams know who may need attention first."
 )
 
 # Input fields
@@ -95,11 +96,20 @@ if st.button('Predict Churn Risk'):
     st.metric('Churn Probability', f'{prob*100:.1f}%')
 
     if prob >= HIGH_RISK_THRESHOLD:
-        st.error('High Risk: Immediate retention offer recommended.')
+        st.error(
+            'Priority Retention: This subscriber shows elevated churn risk. '
+            'Consider proactive retention outreach.'
+        )
     elif prob >= MEDIUM_RISK_THRESHOLD:
-        st.warning('Medium Risk: Monitor and consider proactive outreach.')
+        st.warning(
+            'Watch List: This subscriber shows moderate churn risk. '
+            'Consider monitoring engagement and proactive outreach.'
+        )
     else:
-        st.success('Low Risk: Maintain standard engagement.')
+        st.success(
+            'Healthy Engagement: Current churn risk is relatively low. '
+            'Maintain standard engagement.'
+        )
 
     with st.expander('See computed features used by the model'):
         st.write(input_data.T.rename(columns={0: 'Value'}))
