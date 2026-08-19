@@ -20,7 +20,7 @@ st.title('MTN Nigeria Churn Predictor')
 st.markdown('Identify at-risk subscribers and take action.')
 st.info(
     "Every subscriber has a story. This tool turns usage, tenure, satisfaction, "
-    "spending, and customer feedback into a churn-risk signal — helping retention "
+    "spending, and customer feedback into a churn-risk signal helping retention "
     "teams know who may need attention first."
 )
 
